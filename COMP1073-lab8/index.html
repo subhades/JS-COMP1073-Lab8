@@ -1,0 +1,143 @@
+<!--
+    Amanda Robinson 
+    1181969
+    COMP 1073 - lab week 8
+    March 24th 2023
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>Object Prototypes | COMP1073 Client-Side JavaScript</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link href="css/normalize.css" rel="stylesheet" />
+	<link href="css/styles.css" rel="stylesheet" />
+</head>
+
+    <body>
+        <h1>Inheritance in JavaScript</h1>
+        <p>Let's put JavaScript prototypes and inheritance to work – with <em>coffee</em>.</p>
+        <p id="output"></p>
+
+        <script>
+        		var output = document.getElementById('output');
+            //Creating my tea function with its contructors and then assigning them
+            function Tea(size, isDecaf, isIced, qtyCream, qtySugar){
+                this.size = size;
+                this.isDecaf = isDecaf;
+                this.isIced = isIced;
+                this.qtyCream = qtyCream;
+                this.qtySugar = qtySugar;
+                //creating a few conditions that have outputs that changes based on the input
+                this.decaf = (this.isDecaf === true? 'decaffeinated' : 'caffeinated');
+                this.Iced = (this.isIced === true? 'iced' : 'hot')
+                //template for describing the tea
+                this.description = 'A' + this.size+ ' '+ this.decaf + ' '+ this.Iced +' tea with '+ this.qtyCream + ' cream and ' + this.qtySugar + ' sugar.'
+            }
+            //getting the appropriate image based on the tea cup size and whether or not it is iced
+		    Tea.prototype.serveIt = function() {
+                //creating and element called img to display it with html
+                var cup = document.createElement("img");
+                //setting the attributes to the description of the tea type 
+                cup.setAttribute('title', this.description);
+                //variable for the image source that will use th if/else statements to determine the appropriate image to use 
+                //it used to look like "    var imgSource = 'images/tea-cup-' + this.Iced + '.svg'     "  but I like the look of if statements 
+                var imgSource;
+                if (this.isIced === true){
+                    imgSource = 'images/tea-cup-iced.svg';
+                }
+                else{
+                    imgSource = 'images/tea-cup-hot.svg';
+                }
+                //setting the attributes of the image based on the information and sourcing it to display it 
+                cup.setAttribute('src', imgSource);
+                //creating a variable for cup size that will change the image px size depending on the cup size 
+                var cupSize;
+                //using a switch statement to swtich between the cases of statements and maiking it to lower case as to avoid one capital letter 
+                //from changing the size
+                switch (this.size.toLowerCase()) {
+                    case 'small' :
+                        cupSize = '100px';
+                        break;
+                    case 'medium' :
+                        cupSize = '125px';
+                        break;
+                    case 'large' :
+                        cupSize = '150px';
+                        break;
+                    default :
+                        cupSize = '100px';
+                }
+                //setting the attribut and pushing the output 
+                cup.setAttribute('height', cupSize);
+                output.appendChild(cup);	
+
+            }
+                //creating a new tea object and displaying it
+                let myTea = new Tea('Large', true, true, 0, 0);
+
+                myTea.serveIt();
+        //creating new construct based on the tea function
+        function peachTea(size, isDecaf, isIced , qtyCream, qtySugar, milkType, teaType) {	
+			//inherit from tea function
+			Tea.call(this, size, isDecaf, isIced, qtyCream, qtySugar);
+			//if else if statements to customize the description based on the amount of sugar and coffee is wanted.. if any
+			if(qtyCream == 0 && qtySugar == 0){
+				this.extra = ' black peach tea.'
+			}
+			else if(qtyCream > 0 || qtySugar > 0){
+				this.Cream = (this.qtyCream > 0? qtyCream + ' '+ milkType: ' no cream/milk');
+				this.Sugar = (this.qtySugar >0 ? qtySugar + ' sugar ' : ' no sugar');
+				this.extra = ' peach tea made with ' + this.Cream + ' and ' + this.Sugar;
+			}
+			
+			this.description = 'A ' + this.size + ' ' + this.decaf + this.Iced + this.extra;
+		}
+        //prototype and object creation based on the inherited tea function 
+		peachTea.prototype = Object.create(Tea.prototype);
+		peachTea.prototype.constructor = peachTea;
+
+        //same as the tea function for the cup size 
+		peachTea.prototype.serveIt = function() {
+			
+			var cup = document.createElement("img");
+			cup.setAttribute('title', this.description);
+			var imgSource;
+			if (this.isIced === true){
+				imgSource = 'images/tea-cup-iced.svg';
+			}
+			else{
+				imgSource = 'images/tea-cup-hot.svg';
+			}
+			
+			cup.setAttribute('src', imgSource);
+			var cupSize;
+			switch (this.size) {
+				case 'small' :
+					cupSize = '100px';
+					break;
+				case 'medium' :
+					cupSize = '125px';
+					break;
+				case 'large' :
+					cupSize = '150px';
+					break;
+				default :
+					cupSize = '100px';
+			}
+			cup.setAttribute('height', cupSize);
+			output.appendChild(cup);	
+
+		}
+
+		let myPeachTea = new peachTea('large', false, false, 2, 1, 'oat milks');
+
+	
+		myPeachTea.serveIt();
+        </script>
+        
+    </body>
+    
+</html>
+    
